@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Zula Links: A Quick Bookmarklet Tool For Zula</title>
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
+    <script src="js/esprima.js"></script>
+    <script src="js/base2.js"></script>
+    <script src="js/packer.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="container">
+  <div class="row">
+	<div class="col-md-12 text-center">
+		<h2>Zula Links</h2>
+		<h3>A web project from LaunchRiot</h3>
+		<div class="form-box">
+			<form>
+			 <div class="form-group">
+			    <input type="text" class="form-control" id="LinkTitle" placeholder="Bookmarklet Name" required>
+			  </div>
+			  <div class="form-group">
+			    <input type="text" class="form-control" id="SpaceName" placeholder="Space's Email Name" required>
+			  </div>
+			</form>
+			<button id="Sbutton" class="btn btn-primary">Generate Bookmarklet</button>
+		</div>
+	</div>
+	<div class="col-md-12">
+		<div class="link">
+			<a id="TargetLink" href="#"></a>
+		</div>
+	</div>
+	<div class="col-md-12">
+	<h3>Some Background</h3>
+		<p><a href="http://zulaapp.com" target="_blank">Zula</a> is a team communication app that some friends and I recently started using for an up-and-coming project. The mobile app is in beta and the web app is in alpha, and while Zula has some great core features, it still has a bit to go. I for one am excited to see it grow. On of the great features in Zula is the ability to send emails directly to Spaces ("Spaces" are groups you form in Zula to share messages, files, polls and more).</p>
+		<p>My team and I want to be able to rapidly share links (our project is in a heavy research phase) and there isn't really a good way to do that in Zula yet. But what about emailing your space with links? Easy as pie! Wouldn't that be even better with a bookmarklet? Yes! So now you can generate your own.<p>
+	</div>
+	<div class="col-md-12">
+	<h3>How to Make a Zula Links Bookmarklet</h3>
+		<p>First fill in a Bookmarklet Name. This is what will appear in your browser's toolbar. A name link "Zula Links" will probably work well. You can always change the name later from within your browser.<p>
+		<p>Next, fill in your Zula Space's Email Name. If your Space is called "Secret Sauce", this would probably be "secret.sauce". No need to include the "@zu.la" part, we have that covered for you. To find your Space's Email Name, go to your Space's settings page from within web.zu.la.</p>
+		<p>Finally, drag the generated link up to your browser's bookmark bar and drop it as you would for any other bookmark.</p>
+		<p>Whenever you're on a website you want to share, click on your bookmarklet and it will open your default mail client, prepopulating the To: field and the body.</p>
+	</div>
+	<div class="col-md-12">
+	<h3>Security Note</h3>
+		<p>This site does not track or store anything. So anything you put into the fields above only exists on your computer, until you refresh the page.</p>
+	</div>
+	<div class="col-md-12">
+	<h3>Copyright Notice</h3>
+		<p>This site/service is in no way affiliated with Zula. So if it doesn't work, don't blame them. :)</p>
+	</div>
+	<div class="col-md-12">
+	<h3>Code and Credit</h3>
+		<p>The code is available on <a href="https://github.com/avizuber/Zula-Links" target="_blank">GitHub</a>. It is based off of <a href="https://github.com/starzonmyarmz/Wunderlist-Bookmarklet" target="_blank">this</a> and <a href="https://github.com/szkrd/SimpleBookmarkletBuilder" target="_blank">this</a> and was put together by <a href="http://github.com/avizuber" target="_blank">Avi</a> and <a href="http://github.com/dsiah" target="_blank">David</a>.</p>
+	</div>
+  </div>
+</div>
+
+<script type="text/javascript" language="javascript">
+$(function () {
+    var 
+    	sbutton = $("#Sbutton"),
+        linkTitle = $("#LinkTitle"),
+        link = $("#TargetLink"),
+        astFlag = $("#Ast"),
+        lsKeyTitle = "szkrd.bkmbuilder.title",
+        lsKeySource = "szkrd.bkmbuilder.source",
+        packer = new Packer(),
+        astTimer,
+        reloadValues,
+        linkTitleChange,
+        cleanStr,
+        buildJs,
+        astCheck,
+        space;
+
+    linkTitleChange = function () {
+        var val = $.trim(linkTitle.val());
+        link.text(val);
+        localStorage.setItem(lsKeyTitle, val);
+    };
+
+    buildJs = function () {
+        var inStr,
+        jsStr,
+        space = $("#SpaceName").val(),
+        val = "var t = document.title,u = location.href;location.href = 'mailto:" + space + "@zu.la?subject=Quick Link:' + t + '&body=' + t + ' - ' + u";
+        localStorage.setItem(lsKeySource, val);
+        inStr = "(function(){" + val + "}())";
+        inStr = encodeURI(packer.pack(inStr));
+        jsStr = "javascript" + ":" + inStr;
+        link.attr("href", jsStr);
+        $("#Size").text(jsStr.length);
+        clearTimeout(astTimer);
+        astTimer = setTimeout(astCheck, 500);
+    };
+
+    reloadValues = function () {
+        linkTitle.val(localStorage.getItem(lsKeyTitle) || "bookmarklet");
+    };
+
+    // init
+    reloadValues
+    sbutton.on("click", linkTitleChange);
+    sbutton.on("click", buildJs);
+    buildJs();
+    linkTitleChange();
+});
+</script>
+</body>
+</html>
